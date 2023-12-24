@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+app.use(express.urlencoded({extended:true}))
+
 app.get('/',(req,res) => {
     res.send(`
     <form action="/" method="POST">
@@ -11,11 +13,16 @@ app.get('/',(req,res) => {
 });
 
 app.post('/',(req,res) => {
-    res.send('Recebi o formulário')
+    let value = req.body.nome; //Deve ser o mesmo nome que está no 'name' do input
+    res.send(`Valor escrito -> ${value}`);
 })
 
-app.get('/contact',(req,res) => {
-    res.send('Thank you for contact')
+app.get('/cars/:idCar?',(req,res) => {
+    // /cars/1
+    // /cars/?chave=valor&chave=valor
+    console.log(req.params)
+    console.log(req.query)
+    res.send(req.params.idCar)
 });
 
 app.listen(3000,()=>{
