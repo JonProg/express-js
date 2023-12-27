@@ -1,9 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const routes = require('./routes');
 const app = express();
 const path = require('path');
-const {middlewareGlobal} = require('./src/middlewares/middleware')
+const mongoose = require('mongoose');
+//mongoose.set('strictQuery', true);
 
+
+const {middlewareGlobal} = require('./src/middlewares/middleware')
 
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.resolve(__dirname,'public')));
@@ -22,7 +27,17 @@ app.use(middlewareGlobal);
 
 app.use(routes);
 
-app.listen(3000,()=>{
-    console.log('Acess http://localhost:3000');
-    console.log('Server online on port 3000...');
-});
+mongoose.connect(process.env.CONNECTIONSTRING, {useNewUrlParser:true, useUnifiedTopology:true})
+    .then(() => {
+        app.emit('connected');
+    })
+    .catch(e => console.log(e));  
+
+
+app.on('connected',() => {
+    app.listen(3000,()=>{
+        console.log('Acess http://localhost:3000');
+        console.log('Server online on port 3000...');
+    });
+    }
+);
