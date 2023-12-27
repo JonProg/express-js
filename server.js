@@ -2,6 +2,7 @@ const express = require('express');
 const routes = require('./routes');
 const app = express();
 const path = require('path');
+const {middlewareGlobal} = require('./src/middlewares/middleware')
 
 
 app.use(express.urlencoded({extended:true}));
@@ -15,6 +16,9 @@ na hora de colocar os caminhos dos aquivos estáticos
 
 app.set('views', path.resolve(__dirname,'src','views'));
 app.set('view engine','ejs'); //Serve para adicinar a logica do js no html
+
+app.use(middlewareGlobal);
+//Utilizando um middleware global que é ativado toda vez que uma requisão é feita
 
 app.use(routes);
 
