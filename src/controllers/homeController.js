@@ -19,6 +19,13 @@ HomeModel.find()
 */
 
 exports.homePage = (req,res) => {
+    //req.flash('error','Deu errado');
+    //req.flash('success','Deu certo');
+    //console.log(req.flash('error'),req.flash('success'));
+
+    //req.session.user = {username:'Jonas', password:'mypassword'};//Criando uma session
+    //console.log(req.session.user)
+
     res.render('index');//Fazendo a redenrização do index.ejs
     return;
 };
