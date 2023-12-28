@@ -5,7 +5,11 @@ const routes = require('./routes');
 const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
-//mongoose.set('strictQuery', true);
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const flash = require('connect-flash');
+const helmet = require('helmet');
+const csrf = require('csurf');
 
 mongoose.connect(process.env.CONNECTIONSTRING, {useNewUrlParser:true, useUnifiedTopology:true})
     .then(() => {
@@ -13,12 +17,9 @@ mongoose.connect(process.env.CONNECTIONSTRING, {useNewUrlParser:true, useUnified
     })
     .catch(e => console.log(e)); 
 
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const flash = require('connect-flash');
+const {middlewareGlobal, checkCsrfError, csrfMiddleware} = require('./src/middlewares/middleware')
 
-const {middlewareGlobal} = require('./src/middlewares/middleware')
-
+app.use(helmet());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.resolve(__dirname,'public')));
 
@@ -39,15 +40,18 @@ const sessionOptions = session({
     }
 });
 
-app.use(sessionOptions)
+app.use(sessionOptions);
 app.use(flash());
 
 app.set('views', path.resolve(__dirname,'src','views'));
 app.set('view engine','ejs'); //Serve para adicinar a logica do js no html
 
-app.use(middlewareGlobal);
-//Utilizando um middleware global que é ativado toda vez que uma requisão é feita
+app.use(csrf());
 
+//Utilizando um middleware global que é ativado toda vez que uma requisão é feita
+app.use(middlewareGlobal);
+app.use(checkCsrfError);
+app.use(csrfMiddleware);
 app.use(routes);
  
 app.on('connected',() => {
