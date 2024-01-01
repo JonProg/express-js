@@ -1,2 +1,2 @@
 # express-js
-Estudos sobre express
+Estudos sobre express e a arquitetura MVC
